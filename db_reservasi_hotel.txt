@@ -1,0 +1,288 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: May 26, 2022 at 07:53 AM
+-- Server version: 10.4.21-MariaDB
+-- PHP Version: 8.0.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `reservasi_hotel`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_detail_kamar`
+--
+
+CREATE TABLE `tbl_detail_kamar` (
+  `id_detail_kamar` int(11) NOT NULL,
+  `id_kamar` int(11) NOT NULL,
+  `id_fasilitas_kamar` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_detail_kamar`
+--
+
+INSERT INTO `tbl_detail_kamar` (`id_detail_kamar`, `id_kamar`, `id_fasilitas_kamar`) VALUES
+(71, 4, 4),
+(72, 4, 5),
+(73, 4, 6),
+(74, 5, 4),
+(75, 5, 5),
+(76, 5, 6),
+(77, 5, 8),
+(78, 6, 5),
+(79, 6, 6),
+(80, 6, 9);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_fasilitas_hotel`
+--
+
+CREATE TABLE `tbl_fasilitas_hotel` (
+  `id_fasilitas_hotel` int(11) NOT NULL,
+  `nama_fasilitas` varchar(50) NOT NULL,
+  `deskripsi_fasilitas` mediumtext NOT NULL,
+  `foto_fasilitas` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_fasilitas_hotel`
+--
+
+INSERT INTO `tbl_fasilitas_hotel` (`id_fasilitas_hotel`, `nama_fasilitas`, `deskripsi_fasilitas`, `foto_fasilitas`) VALUES
+(7, 'kolam renang', 'cocok untuk bersantai dan menghadap ke laut', 'Kolam-Renang.jpg'),
+(8, 'restourant', 'restourant indoor dan outdoor', 'resto hotel.jpeg'),
+(9, 'sauna', 'muat untuk 3 orang', 'sauna.jpg'),
+(12, 'taman', 'taman indah  dan cocok untuk bersantai dan bermain bersama keluarga', 'taman.jpg'),
+(13, 'aula', 'aula pesta', 'aula.jpg'),
+(14, 'spa', 'cocok untuk merilekskan tubuh', 'spa.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_fasilitas_kamar`
+--
+
+CREATE TABLE `tbl_fasilitas_kamar` (
+  `id_fasilitas_kamar` int(11) NOT NULL,
+  `nama_kamar` varchar(50) NOT NULL,
+  `deskripsi_kamar` mediumtext NOT NULL,
+  `foto_kamar` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_fasilitas_kamar`
+--
+
+INSERT INTO `tbl_fasilitas_kamar` (`id_fasilitas_kamar`, `nama_kamar`, `deskripsi_kamar`, `foto_kamar`) VALUES
+(4, 'telepon', 'telepon ke semua jaringan', 'tlp.jpg'),
+(5, 'kulkas mini', 'dapat menyimpan buah ,minuman dan makanan ringan', 'kulkas mini.jpg'),
+(6, 'kamar mandi', 'bersih di lengkapi shower', 'kamar mandi.jpg'),
+(8, 'bethub', 'tersedia air hangat dan pewangi badan', 'Fasilitas-Hotel-03-Bathub-Finansialku.jpg'),
+(9, 'tv', 'tv digital dapat dihubungkan dengan jaringan internet', 'tv.jpg');
+
+--
+-- Triggers `tbl_fasilitas_kamar`
+--
+DELIMITER $$
+CREATE TRIGGER `hapusFasilitasKamar` AFTER DELETE ON `tbl_fasilitas_kamar` FOR EACH ROW DELETE FROM tbl_detail_kamar WHERE id_fasilitas_kamar=OLD.id_fasilitas_kamar
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_kamar`
+--
+
+CREATE TABLE `tbl_kamar` (
+  `id_kamar` int(11) NOT NULL,
+  `harga_kamar` int(10) NOT NULL,
+  `tipe_kamar` enum('standar','single','deluxe','suite') NOT NULL,
+  `foto_kamar` varchar(50) NOT NULL,
+  `jumlah_kamar` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_kamar`
+--
+
+INSERT INTO `tbl_kamar` (`id_kamar`, `harga_kamar`, `tipe_kamar`, `foto_kamar`, `jumlah_kamar`) VALUES
+(4, 8000000, 'deluxe', 'kamae 1.jpg', '16'),
+(5, 9750000, 'suite', 'OIP (1).jpg', '13'),
+(6, 3000000, 'single', 's.jpg', '19');
+
+--
+-- Triggers `tbl_kamar`
+--
+DELIMITER $$
+CREATE TRIGGER `hapusDetailKamar` AFTER DELETE ON `tbl_kamar` FOR EACH ROW delete from tbl_detail_kamar where tbl_detail_kamar.id_kamar=old.id_kamar
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_reservasi`
+--
+
+CREATE TABLE `tbl_reservasi` (
+  `id_reservasi` int(11) NOT NULL,
+  `nama_pemesan` varchar(100) NOT NULL,
+  `no_handphone` varchar(30) NOT NULL,
+  `tgl_cek_in` date NOT NULL,
+  `tgl_cek_out` date NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `nama_tamu` varchar(100) NOT NULL,
+  `id_kamar` int(11) NOT NULL,
+  `jml_kamar_dipesan` int(11) NOT NULL,
+  `status` enum('in','out','','') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_reservasi`
+--
+
+INSERT INTO `tbl_reservasi` (`id_reservasi`, `nama_pemesan`, `no_handphone`, `tgl_cek_in`, `tgl_cek_out`, `email`, `nama_tamu`, `id_kamar`, `jml_kamar_dipesan`, `status`) VALUES
+(2, 'adi', '0891328973', '2022-03-31', '2022-04-01', 'adi@gamil.com', 'ogi', 3, 2, 'out'),
+(9, 'ade', '89076289', '2022-05-19', '2022-05-20', 'adi@gamil.com', 'ogi', 3, 2, NULL),
+(11, 'lia', '089782867897', '2022-05-20', '2022-05-22', 'amelia@gmail.com', 'lia', 3, 1, 'out'),
+(12, 'jungkook', '089723198', '2022-05-24', '2022-05-26', 'jk2313@gmail.com', 'jungkook', 6, 1, 'in'),
+(13, 'nita', '0891328973', '2022-05-25', '2022-05-27', 'adi@gamil.com', 'nita', 5, 1, 'out'),
+(14, 'jimin', '0987313187', '2022-05-24', '2022-05-25', 'parkjimin@gmail.com', 'park jimin', 3, 1, 'in'),
+(15, 'dede', 'abcde', '2022-05-24', '2022-05-25', 'dede@gmil.com', 'dede', 0, -2, NULL),
+(16, 'pa yaya', '089762158', '2022-05-24', '2022-05-20', 'yaya@gmail.com', 'pa yaya', 5, -1, NULL),
+(17, 'ade', '08972371', '2022-05-24', '2022-05-25', 'ade@gmail.com', 'ade', 4, 0, NULL);
+
+--
+-- Triggers `tbl_reservasi`
+--
+DELIMITER $$
+CREATE TRIGGER `infoJumlahKamar` AFTER UPDATE ON `tbl_reservasi` FOR EACH ROW BEGIN
+   	 IF (NEW.status='in') THEN
+   		 UPDATE tbl_kamar SET jumlah_kamar=jumlah_kamar-OLD.jml_kamar_dipesan
+   		 WHERE tbl_kamar.id_kamar=NEW.id_kamar;
+   	 ELSE
+   		 UPDATE tbl_kamar SET jumlah_kamar=jumlah_kamar+OLD.jml_kamar_dipesan
+   		 WHERE tbl_kamar.id_kamar=NEW.id_kamar;   	 
+   	 END IF;    
+    END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `username` varchar(30) NOT NULL,
+  `password` char(32) NOT NULL,
+  `namauser` varchar(20) NOT NULL,
+  `level` enum('admin','petugas','','') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`username`, `password`, `namauser`, `level`) VALUES
+('admin', '202cb962ac59075b964b07152d234b70', 'admin', 'admin'),
+('petugas', '202cb962ac59075b964b07152d234b70', 'petugas', 'petugas');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tbl_detail_kamar`
+--
+ALTER TABLE `tbl_detail_kamar`
+  ADD PRIMARY KEY (`id_detail_kamar`);
+
+--
+-- Indexes for table `tbl_fasilitas_hotel`
+--
+ALTER TABLE `tbl_fasilitas_hotel`
+  ADD PRIMARY KEY (`id_fasilitas_hotel`);
+
+--
+-- Indexes for table `tbl_fasilitas_kamar`
+--
+ALTER TABLE `tbl_fasilitas_kamar`
+  ADD PRIMARY KEY (`id_fasilitas_kamar`);
+
+--
+-- Indexes for table `tbl_kamar`
+--
+ALTER TABLE `tbl_kamar`
+  ADD PRIMARY KEY (`id_kamar`);
+
+--
+-- Indexes for table `tbl_reservasi`
+--
+ALTER TABLE `tbl_reservasi`
+  ADD PRIMARY KEY (`id_reservasi`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`username`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tbl_detail_kamar`
+--
+ALTER TABLE `tbl_detail_kamar`
+  MODIFY `id_detail_kamar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+
+--
+-- AUTO_INCREMENT for table `tbl_fasilitas_hotel`
+--
+ALTER TABLE `tbl_fasilitas_hotel`
+  MODIFY `id_fasilitas_hotel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `tbl_fasilitas_kamar`
+--
+ALTER TABLE `tbl_fasilitas_kamar`
+  MODIFY `id_fasilitas_kamar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `tbl_kamar`
+--
+ALTER TABLE `tbl_kamar`
+  MODIFY `id_kamar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `tbl_reservasi`
+--
+ALTER TABLE `tbl_reservasi`
+  MODIFY `id_reservasi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
